@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>مهارات</title>
+
+    <link rel="stylesheet" href="css/all.min.css" />
+    <link rel="stylesheet" href="css/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <div class="spinner">
+      <div class="bounce1"></div>
+      <div class="bounce2"></div>
+      <div class="bounce3"></div>
+    </div>
+
+    <select class="form-select" aria-label="Default select example"
+    onchange="slectLimtproduct(this)">
+      <option selected>Number Of Products Is Show</option>
+      <option value="1">One</option>
+      <option value="5">Five</option>
+      <option value="10">Ten</option>
+    </select>
+
+    <select class="form-select" aria-label="Default select example"
+    onchange="slectcategory(this)">
+      <option selected>All products</option>
+      <option value="women's clothing">Women's clothing</option>
+      <option value="men's clothing">Men's clothing</option>
+      <option value="jewelery">Jewelery</option>
+      <option value="electronics">Electronics</option>
+    </select>
+
+    <div class="container">
+      <div class="row" id="card_data"></div>
+      <br />
+    </div>
+
+    <div
+      class="modal fade"
+      id="exampleModal"
+      tabindex="-1"
+      aria-labelledby="exampleModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Edit user Info</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div class="product-info"></div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-danger"
+              data-bs-dismiss="modal"
+            >
+              close
+            </button>
+            <button type="button" class="btn btn-danger">Edit</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+  <script src="js/jquery.js"></script>
+  <script src="js/bootstrap.bundle.min.js"></script>
+  <script>
+        getAlldata();
+        function getAlldata() {
+          var settings = {
+            url: "https://fakestoreapi.com/products",
+            method: "GET",
+            timeout: 0,
+          };
+
+          $.ajax(settings).done(function (response) {
+            $(`.spinner`).hide();
+            var Thtml = "";
+            for (var i = 0; i < response.length; i++) {
+            Thtml+=
+                `<div class="col-4">
+          <div class="card" style="width: 18rem;">
+            <div class="imge">
+              <img src="` +
+                response[i]["image"] +
+                `" class="card-img-top" alt="..."></div>
+      <div class="card-body">
+        <h5 class="card-title">` +
+                response[i]["title"] +
+                `</h5>
+                
+                <label>` +
+                response[i]["price"] +
+                `$</h5>
+                <p>Rate:` +
+                response[i]["rating"]["rate"] +
+                `</p>
+
+        <a onclick="getsigleproduct('`+ response[i][`id`] +`')" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" >تفاصيل المنتج</a>
+      </div>
+    </div>
+    </div>`;
+              $(`#card_data`).html(Thtml);
+            }
+            console.log(response);
+          });
+        }
+        function getsigleproduct(id){
+           settings = {
+            url: "https://fakestoreapi.com/products/"+id,
+            method: "GET",
+            timeout: 0,
+          };
+
+    $.ajax(settings).done(function (response) {
+      $(`.modal-title`).html(response["title"]);
+      var model_info=
+                `<div class="col-12">
+          <div class="card">
+            <div class="imge">
+              <img src="` +
+                response["image"] +
+                `" class="card-img-top" alt="...">
+                </div>
+      
+      <div class="card-body">
+        <h5 class="card-title">` +
+                response["title"] +
+                `</h5>
+        <p class="card-text">` +
+                response["description"] +
+                `</p>
+
+      </div>
+    </div>
+    </div>`;
+              $(`.product-info`).html(model_info);
+      console.log(response);
+    });
+         }
+         
+function slectLimtproduct(limtvalue){
+  var limt=limtvalue.value;
+  console.log(limt);
+  var settings = {
+  "async": true,
+  "crossDomain": true,
+  "url": "https://fakestoreapi.com/products?limit="+limt,
+  "method": "GET",
+}
+
+$.ajax(settings).done(function (response) {
+  
+  var Shtml = "";
+            for (var i = 0; i < limt; i++) {
+            Shtml+=
+                `<div class="col-4">
+          <div class="card card1" style="width: 18rem;">
+            <div class="imge">
+              <img src="` +
+                response[i]["image"] +
+                `" class="card-img-top" alt="..."></div>
+      <div class="card-body">
+        <h5 class="card-title">` +
+                response[i]["title"] +
+                `</h5>
+                
+        <p class="card-text">` +
+                response[i]["description"] +
+                `</p>
+
+        <a onclick="getsigleproduct('`+ response[i][`id`] +`')" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" >تفاصيل المنتج</a>
+      </div>
+    </div>
+    </div>`;
+              $(`#card_data`).html(Shtml);
+            }
+  console.log(response);
+});
+}
+function slectcategory(Scategory){
+  var catg=Scategory.value;
+  console.log(catg);
+  var settings = {
+  "async": true,
+  "crossDomain": true,
+  "url": "https://fakestoreapi.com/products/category/"+catg,
+  "method": "GET",
+  
+}
+
+$.ajax(settings).done(function (response) {
+  
+  var Chtml = "";
+            for (var i = 0; i < response.length; i++) {
+              if(response[i]["category"]==catg){
+                Chtml+=
+                `<div class="col-4">
+          <div class="card" style="width: 18rem;">
+            <div class="imge">
+              <img src="` +
+                response[i]["image"] +
+                `" class="card-img-top" alt="..."></div>
+      <div class="card-body">
+        <h5 class="card-title">` +
+                response[i]["title"] +
+                `</h5>
+                <h5 class="card-title">` +
+                response[i]["price"] +
+                `$</h5>
+                <label class="card-title">` +
+                response[i]["rating"]["rate"] +
+                `</label>
+        <p class="card-text">` +
+                response[i]["description"] +
+                `</p>
+                <p>` +
+                response[i]["category"] +
+                `</p>
+        <a onclick="getsigleproduct('`+ response[i][`id`] +`')" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" >تفاصيل المنتج</a>
+      </div>
+    </div>
+    </div>`;
+              $(`#card_data`).html(Chtml);
+              }
+            
+  }
+  console.log(response);
+});
+}
+  </script>
+</html>
